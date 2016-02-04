@@ -44,8 +44,11 @@
 (defmethod cepl.host:shutdown ()
   (sdl2:quit))
 
+(defun sdl-swap (handle)
+  (sdl2::sdl-gl-swap-window handle))
+
 (defmethod get-step-func ()
-  #'sdl2::sdl-gl-swap-window)
+  #'identity)
 
 (defmethod get-swap-func ()
-  #'identity)
+  #'sdl-swap)
