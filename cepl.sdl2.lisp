@@ -1,4 +1,4 @@
-(in-package :cepl.sdl)
+(in-package :cepl.sdl2)
 
 (defvar *initd* nil)
 
@@ -52,3 +52,6 @@
 
 (defmethod get-swap-func ()
   #'sdl-swap)
+
+(defmethod set-primary-thread-and-run (func &rest args)
+  (sdl2:make-this-thread-main (lambda () (apply func args))))
