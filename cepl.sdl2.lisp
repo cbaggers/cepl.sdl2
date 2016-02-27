@@ -4,7 +4,8 @@
 
 (defmethod cepl.host:init ()
   (unless *initd*
-    (unless (sdl2:init :everything) (error "Failed to initialise SDL"))
+    ;;(unless (sdl2:init :everything) (error "Failed to initialise SDL"))
+    (sdl2:init :everything)
     (setf *initd* t)))
 
 (defmethod cepl.host:request-context
