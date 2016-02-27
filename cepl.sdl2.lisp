@@ -3,7 +3,6 @@
 (defvar *initd* nil)
 
 (defmethod cepl.host:init ()
-  (setf *backend* :sdl)
   (unless *initd*
     (unless (sdl2:init :everything) (error "Failed to initialise SDL"))
     (setf *initd* t)))
@@ -14,7 +13,6 @@
      red-size green-size blue-size buffer-size
      double-buffer hidden resizable)
   "Initializes the backend and returns a list containing: (context window)"
-  (setf *backend* :sdl)
   (let ((win (sdl2:create-window
               :title title :w width :h height
               :flags (remove nil `(:shown :opengl
