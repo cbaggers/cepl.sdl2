@@ -90,8 +90,4 @@
 
 (defun collect-sdl-events ()
   (%case-events (event)
-    (:quit (:timestamp ts)
-           (format nil "should quit ~s" (sdl->lisp-time ts)))
-    (:windowevent (:timestamp ts :event e :data1 x :data2 y)
-                  (format nil "window-event ~s ~s (v! ~s ~s)"
-                          (sdl->lisp-time ts) e x y))))
+    (:quit () (cepl.host:shutdown))))
