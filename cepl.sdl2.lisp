@@ -46,12 +46,6 @@
 (defun sdl-swap (handle)
   (sdl2::sdl-gl-swap-window handle))
 
-(defmethod get-step-func ()
-  #'collect-sdl-events)
-
-(defmethod get-swap-func ()
-  #'sdl-swap)
-
 (defmethod set-primary-thread-and-run (func &rest args)
   (sdl2:make-this-thread-main (lambda () (apply func args))))
 
@@ -90,3 +84,9 @@
 (defun collect-sdl-events ()
   (%case-events (event)
     (:quit () (cepl.host:shutdown))))
+
+;;----------------------------------------------------------------------
+;; tell cepl what to use
+
+(set-step-func #'collect-sdl-events)
+(set-swap-func #'sdl-swap)
