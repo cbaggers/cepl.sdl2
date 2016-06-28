@@ -21,6 +21,12 @@
                                           ,(when resizable :resizable)
                                           ,(when no-frame :borderless)
                                           ,(when hidden :hidden))))))
+    #+windows ; hack to fix CEPL hangup on Windows under SLIME
+    (progn
+      (sdl2:hide-window win)
+      (sdl2:show-window win)
+      (when hidden
+        (sdl2:hide-window win)))
     #+darwin
     (progn
       (setf cl-opengl-bindings::*gl-get-proc-address* #'sdl2::gl-get-proc-address)
