@@ -5,8 +5,12 @@
 (defmethod cepl.host:init ()
   (unless *initd*
     ;;(unless (sdl2:init :everything) (error "Failed to initialise SDL"))
-    (sdl2:init :everything)
+    (init-sdl2-low-level :everything)
     (setf *initd* t)))
+
+(defun init-sdl2-low-level (&rest sdl-init-flags)
+  (let ((init-flags (autowrap:mask-apply 'sdl2::sdl-init-flags sdl-init-flags)))
+    (sdl2::check-rc (sdl2::sdl-init init-flags))))
 
 (defmethod cepl.host:request-context
     (width height title fullscreen
