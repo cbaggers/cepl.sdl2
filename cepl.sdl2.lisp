@@ -16,7 +16,7 @@
     (width height title fullscreen
      no-frame alpha-size depth-size stencil-size
      red-size green-size blue-size buffer-size
-     double-buffer hidden resizable)
+     double-buffer hidden resizable gl-version)
   "Initializes the backend and returns a list containing: (context window)"
   (let ((win (sdl2:create-window
               :title title :w width :h height
@@ -25,30 +25,36 @@
                                           ,(when resizable :resizable)
                                           ,(when no-frame :borderless)
                                           ,(when hidden :hidden))))))
-    #+windows ; hack to fix CEPL hangup on Windows under SLIME
-    (progn
-      (sdl2:hide-window win)
-      (sdl2:show-window win)
-      (when hidden
-        (sdl2:hide-window win)))
-    #+darwin
-    (progn
-      (setf cl-opengl-bindings::*gl-get-proc-address* #'sdl2::gl-get-proc-address)
-      (sdl2:gl-set-attr :context-major-version 4)
-      (sdl2:gl-set-attr :context-minor-version 1)
-      (sdl2:gl-set-attr :context-profile-mask sdl2-ffi::+SDL-GL-CONTEXT-PROFILE-CORE+))
-    (sdl2:gl-set-attr :context-profile-mask 1)
-    (sdl2:gl-set-attr :alpha-size alpha-size)
-    (sdl2:gl-set-attr :depth-size depth-size)
-    (sdl2:gl-set-attr :stencil-size stencil-size)
-    (sdl2:gl-set-attr :red-size red-size)
-    (sdl2:gl-set-attr :green-size green-size)
-    (sdl2:gl-set-attr :blue-size blue-size)
-    (sdl2:gl-set-attr :buffer-size buffer-size)
-    (sdl2:gl-set-attr :doublebuffer (if double-buffer 1 0))
-    (let ((contex (sdl2:gl-create-context win)))
-      (sdl2:gl-make-current win contex)
-      (list contex win))))
+    (destructuring-bind (&optional major minor)
+        (when gl-version (cepl.context:split-float-version gl-version))
+      #+windows ; hack to fix CEPL hangup on Windows under SLIME
+      (progn
+        (sdl2:hide-window win)
+        (sdl2:show-window win)
+        (when hidden
+          (sdl2:hide-window win)))
+      #+darwin
+      (progn
+        (setf cl-opengl-bindings::*gl-get-proc-address* #'sdl2::gl-get-proc-address)
+        (sdl2:gl-set-attr :context-major-version (or major 4))
+        (sdl2:gl-set-attr :context-minor-version (or minor 1))
+        (sdl2:gl-set-attr :context-profile-mask sdl2-ffi::+SDL-GL-CONTEXT-PROFILE-CORE+))
+      #-darwin
+      (when gl-version
+        (sdl2:gl-set-attr :context-major-version major)
+        (sdl2:gl-set-attr :context-minor-version minor))
+      (sdl2:gl-set-attr :context-profile-mask 1)
+      (sdl2:gl-set-attr :alpha-size alpha-size)
+      (sdl2:gl-set-attr :depth-size depth-size)
+      (sdl2:gl-set-attr :stencil-size stencil-size)
+      (sdl2:gl-set-attr :red-size red-size)
+      (sdl2:gl-set-attr :green-size green-size)
+      (sdl2:gl-set-attr :blue-size blue-size)
+      (sdl2:gl-set-attr :buffer-size buffer-size)
+      (sdl2:gl-set-attr :doublebuffer (if double-buffer 1 0))
+      (let ((contex (sdl2:gl-create-context win)))
+        (sdl2:gl-make-current win contex)
+        (list contex win)))))
 
 (defmethod cepl.host:shutdown ()
   (sdl2:quit))
