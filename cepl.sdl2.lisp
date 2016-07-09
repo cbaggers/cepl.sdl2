@@ -2,10 +2,10 @@
 
 (defvar *initd* nil)
 
-(defmethod cepl.host:init ()
+(defmethod cepl.host:init (&optional (init-flags :everything))
   (unless *initd*
     ;;(unless (sdl2:init :everything) (error "Failed to initialise SDL"))
-    (init-sdl2-low-level :everything)
+    (init-sdl2-low-level init-flags)
     (setf *initd* t)))
 
 (defun init-sdl2-low-level (&rest sdl-init-flags)
