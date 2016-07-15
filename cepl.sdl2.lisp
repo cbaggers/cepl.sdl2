@@ -57,7 +57,12 @@
         (list contex win)))))
 
 (defmethod cepl.host:shutdown ()
-  (sdl2:quit))
+  (low-level-quit))
+
+(defun low-level-quit ()
+  (sdl2::sdl-quit)
+  (setf sdl2::*main-thread-channel* nil)
+  (setf sdl2::*lisp-message-event* nil))
 
 (defun sdl-swap (handle)
   (sdl2::sdl-gl-swap-window handle))
