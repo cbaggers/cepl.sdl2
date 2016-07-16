@@ -102,7 +102,8 @@
                :finally (return (remove nil results)))))
      (sdl2:free-event ,event)))
 
-(defun collect-sdl-events ()
+(defun collect-sdl-events (win)
+  (declare (ignore win))
   (%case-events (event)
     (:quit () (cepl.host:shutdown))))
 
