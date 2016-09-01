@@ -43,7 +43,8 @@
       (when gl-version
         (sdl2:gl-set-attr :context-major-version major)
         (sdl2:gl-set-attr :context-minor-version minor))
-      (sdl2:gl-set-attr :context-profile-mask 1)
+      (handler-case (sdl2:gl-set-attr :context-profile-mask 1)
+        (error ()))
       (sdl2:gl-set-attr :alpha-size alpha-size)
       (sdl2:gl-set-attr :depth-size depth-size)
       (sdl2:gl-set-attr :stencil-size stencil-size)
