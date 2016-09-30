@@ -109,7 +109,14 @@
     (:quit () (cepl.host:shutdown))))
 
 ;;----------------------------------------------------------------------
+;; window size
+
+(defun sdl-win-size (win-handle)
+  (multiple-value-list (sdl2:get-window-size win-handle)))
+
+;;----------------------------------------------------------------------
 ;; tell cepl what to use
 
 (set-step-func #'collect-sdl-events)
 (set-swap-func #'sdl-swap)
+(set-window-size-func #'sdl-win-size)
