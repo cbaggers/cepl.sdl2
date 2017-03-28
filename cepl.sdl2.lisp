@@ -75,20 +75,14 @@
 
 ;;----------------------------------------------------------------------
 
-(defun make-sdl-context (surface version width height title fullscreen
-                         no-frame alpha-size depth-size stencil-size
-                         red-size green-size blue-size buffer-size
-                         double-buffer hidden resizable)
-  (declare (ignore width height title fullscreen no-frame hidden resizable))
+(defun make-sdl-context (surface version double-buffer
+                         alpha-size depth-size stencil-size buffer-size
+                         red-size green-size blue-size)
   (destructuring-bind (&optional major minor)
       (when version (cepl.context:split-float-version version))
+    (setf cl-opengl-bindings::*gl-get-proc-address* #'sdl2::gl-get-proc-address)
     #+darwin
-    (progn
-      (setf cl-opengl-bindings::*gl-get-proc-address* #'sdl2::gl-get-proc-address)
-      (sdl2:gl-set-attr :context-major-version (or major 4))
-      (sdl2:gl-set-attr :context-minor-version (or minor 1))
-      (sdl2:gl-set-attr :context-profile-mask sdl2-ffi::+SDL-GL-CONTEXT-PROFILE-CORE+))
-    #-darwin
+    (sdl2:gl-set-attr :context-profile-mask sdl2-ffi::+SDL-GL-CONTEXT-PROFILE-CORE+)
     (when version
       (sdl2:gl-set-attr :context-major-version major)
       (sdl2:gl-set-attr :context-minor-version minor))
