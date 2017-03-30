@@ -134,6 +134,22 @@
 (defun sdl-surface-size (win-handle)
   (multiple-value-list (sdl2:get-window-size win-handle)))
 
+(defun sdl-set-surface-size (win-handle width height)
+  (sdl2:set-window-size win-handle width height))
+
+(defun sdl-surface-fullscreen-p (surface)
+  (not (null (intersection '(:fullscreen-desktop :fullscreen)
+                           (sdl2:get-window-flags surface)))))
+
+(defun sdl-set-surface-fullscreen (surface state)
+  (sdl2:set-window-fullscreen surface state))
+
+(defun sdl-surface-title (surface)
+  (values (sdl2:get-window-title surface)))
+
+(defun sdl-set-surface-title (surface title)
+  (sdl2:set-window-title surface title))
+
 ;;----------------------------------------------------------------------
 
 (defclass sdl-api (cepl.host:api-1)
@@ -160,6 +176,16 @@
    ;;
    (surface-size-function :initform #'sdl-surface-size)
    ;;
-   (make-context-current-function :initform #'sdl-make-current)))
+   (make-context-current-function :initform #'sdl-make-current)
+   ;;
+   (set-surface-size-function :initform #'sdl-set-surface-size)
+   ;;
+   (surface-fullscreen-p-function :initform #'sdl-surface-fullscreen-p)
+   ;;
+   (set-surface-fullscreen-function :initform #'sdl-set-surface-fullscreen)
+   ;;
+   (surface-title-function :initform #'sdl-surface-title)
+   ;;
+   (set-surface-title-function :initform #'sdl-set-surface-title)))
 
 (register-host 'sdl-api)
