@@ -60,7 +60,8 @@
 (let ((listeners nil))
   ;;
   (defun sdl-register-listener (func)
-    (push func listeners))
+    (unless (find func listeners)
+      (push func listeners)))
   ;;
   (defun sdl-step-v1 (surface)
     (declare (ignore surface))
