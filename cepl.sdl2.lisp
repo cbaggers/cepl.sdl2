@@ -5,11 +5,12 @@
 ;;======================================================================
 ;; api v1
 
-(defmethod sdl-init (&rest init-flags)
-  (let ((flags (or init-flags :everything)))
-    (unless (sdl2:was-init :everything)
-      (init-sdl2-low-level flags)
-      (setf *initd* t))))
+(defgeneric sdl-init (&rest init-flags)
+  (:method (&rest init-flags)
+    (let ((flags (or init-flags :everything)))
+      (unless (sdl2:was-init :everything)
+        (init-sdl2-low-level flags)
+        (setf *initd* t)))))
 
 (defun init-sdl2-low-level (&rest sdl-init-flags)
   (let ((init-flags (autowrap:mask-apply 'sdl2::sdl-init-flags sdl-init-flags)))
@@ -17,7 +18,7 @@
 
 ;;----------------------------------------------------------------------
 
-(defmethod sdl-shutdown ()
+(defun sdl-shutdown ()
   (low-level-quit))
 
 (defun low-level-quit ()
