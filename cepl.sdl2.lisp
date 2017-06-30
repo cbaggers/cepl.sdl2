@@ -191,3 +191,18 @@
    (set-surface-title-function :initform #'sdl-set-surface-title)))
 
 (register-host 'sdl-api)
+
+;;----------------------------------------------------------------------
+
+(defun vsync ()
+  (let ((val (sdl2-ffi.functions:sdl-gl-get-swap-interval)))
+    (cond
+      ((= val -1) :unsupported)
+      ((= val 0) nil)
+      ((= val 1) t))))
+
+(defun (setf vsync) (boolean)
+  (if (eq :unsupported (vsync))
+      (warn "Sorry setting vsync is not supported")
+      (sdl2-ffi.functions:sdl-gl-set-swap-interval (if boolean 1 0)))
+  boolean)
