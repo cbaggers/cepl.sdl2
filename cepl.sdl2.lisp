@@ -94,6 +94,9 @@
   (let ((context (if version
                      (create-context-by-version surface version)
                      (search-for-context surface))))
+    (assert context ()
+            "CEPL.SDL2: Could not find a suitable context for CEPL.
+Your machine must support at least GL 3.3")
     (sdl2:gl-make-current surface context)
     context))
 
