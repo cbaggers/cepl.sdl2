@@ -80,28 +80,49 @@
 (defun make-sdl-context (surface version double-buffer
                          alpha-size depth-size stencil-size buffer-size
                          red-size green-size blue-size)
+  (setf cl-opengl-bindings::*gl-get-proc-address* #'sdl2::gl-get-proc-address)
+  (sdl2:gl-set-attr :alpha-size alpha-size)
+  (sdl2:gl-set-attr :depth-size depth-size)
+  (when stencil-size
+    (sdl2:gl-set-attr :stencil-size stencil-size))
+  (sdl2:gl-set-attr :red-size red-size)
+  (sdl2:gl-set-attr :green-size green-size)
+  (sdl2:gl-set-attr :blue-size blue-size)
+  (sdl2:gl-set-attr :buffer-size buffer-size)
+  (sdl2:gl-set-attr :doublebuffer (if double-buffer 1 0))
+  ;;
+  (let ((context (if version
+                     (create-context-by-version surface version)
+                     (search-for-context surface))))
+    (sdl2:gl-make-current surface context)
+    context))
+
+(defun create-context-by-version (surface version)
   (destructuring-bind (&optional major minor)
-      (when version (cepl.context:split-float-version version))
-    (setf cl-opengl-bindings::*gl-get-proc-address* #'sdl2::gl-get-proc-address)
-    #+darwin
-    (sdl2:gl-set-attr :context-profile-mask sdl2-ffi::+SDL-GL-CONTEXT-PROFILE-CORE+)
-    (when version
-      (sdl2:gl-set-attr :context-major-version major)
-      (sdl2:gl-set-attr :context-minor-version minor))
-    (handler-case (sdl2:gl-set-attr :context-profile-mask 1)
-      (error ()))
-    (sdl2:gl-set-attr :alpha-size alpha-size)
-    (sdl2:gl-set-attr :depth-size depth-size)
-    (when stencil-size
-      (sdl2:gl-set-attr :stencil-size stencil-size))
-    (sdl2:gl-set-attr :red-size red-size)
-    (sdl2:gl-set-attr :green-size green-size)
-    (sdl2:gl-set-attr :blue-size blue-size)
-    (sdl2:gl-set-attr :buffer-size buffer-size)
-    (sdl2:gl-set-attr :doublebuffer (if double-buffer 1 0))
-    (let ((contex (sdl2:gl-create-context surface)))
-      (sdl2:gl-make-current surface contex)
-      contex)))
+      (cepl.context:split-float-version version)
+    (sdl2:gl-set-attr :context-major-version major)
+    (sdl2:gl-set-attr :context-minor-version minor)
+    (sdl2:gl-create-context surface)))
+
+(defun search-for-context (surface)
+  (let ((+ sdl2-ffi::+sdl-gl-context-profile-core+)
+        (- sdl2-ffi::+sdl-gl-context-profile-compatibility+)
+        context)
+    (loop :for (major minor core) :in `((4 5 ,+) (4 5 ,-) (4 4 ,+) (4 4 ,-)
+                                        (4 3 ,+) (4 3 ,-) (4 2 ,+) (4 2 ,-)
+                                        (4 1 ,+) (4 1 ,-) (4 0 ,+) (4 0 ,-)
+                                        (3 3 ,+) (3 3 ,-))
+       :until context
+       :do (handler-case
+               (progn
+                 ;; (print (list :> major minor (= core +)))
+                 (sdl2:gl-set-attr :context-profile-mask core)
+                 (sdl2:gl-set-attr :context-major-version major)
+                 (sdl2:gl-set-attr :context-minor-version minor)
+                 (setf context (sdl2:gl-create-context surface)))
+             (error ())))
+    context))
+
 
 (defun sdl-make-current (context surface)
   (sdl2:gl-make-current surface context))
