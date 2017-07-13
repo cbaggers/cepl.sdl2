@@ -100,21 +100,27 @@ Your machine must support at least GL 3.3")
     (sdl2:gl-make-current surface context)
     context))
 
+(defvar *core-context* t)
+
 (defun create-context-by-version (surface version)
   (destructuring-bind (&optional major minor)
       (cepl.context:split-float-version version)
+    (sdl2:gl-set-attr :context-profile-mask
+                      (if *core-context*
+                          sdl2-ffi::+sdl-gl-context-profile-core+
+                          sdl2-ffi::+sdl-gl-context-profile-compatibility+))
     (sdl2:gl-set-attr :context-major-version major)
     (sdl2:gl-set-attr :context-minor-version minor)
     (sdl2:gl-create-context surface)))
 
 (defun search-for-context (surface)
-  (let ((+ sdl2-ffi::+sdl-gl-context-profile-core+)
-        (- sdl2-ffi::+sdl-gl-context-profile-compatibility+)
+  (let ((p (if *core-context*
+               sdl2-ffi::+sdl-gl-context-profile-core+
+               sdl2-ffi::+sdl-gl-context-profile-compatibility+))
         context)
-    (loop :for (major minor core) :in `((4 5 ,+) (4 5 ,-) (4 4 ,+) (4 4 ,-)
-                                        (4 3 ,+) (4 3 ,-) (4 2 ,+) (4 2 ,-)
-                                        (4 1 ,+) (4 1 ,-) (4 0 ,+) (4 0 ,-)
-                                        (3 3 ,+) (3 3 ,-))
+    (loop :for (major minor core) :in `((4 5 ,p) (4 4 ,p) (4 3 ,p)
+                                        (4 2 ,p) (4 1 ,p) (4 0 ,p)
+                                        (3 3 ,p))
        :until context
        :do (handler-case
                (progn
