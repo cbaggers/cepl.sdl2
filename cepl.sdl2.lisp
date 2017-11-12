@@ -25,7 +25,7 @@
   (sdl2::sdl-quit)
   (setf sdl2::*main-thread-channel* nil)
   (setf sdl2::*lisp-message-event* nil)
-  (let ((init-flags (autowrap:mask-apply 'sdl2::sdl-init-flags :everything)))
+  (let ((init-flags (autowrap:mask 'sdl2::sdl-init-flags :everything)))
     (sdl2::check-rc (sdl2::sdl-init init-flags))))
 
 ;;----------------------------------------------------------------------
