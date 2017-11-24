@@ -141,9 +141,8 @@ Your machine must support at least GL 3.3")
                sdl2-ffi::+sdl-gl-context-profile-core+
                sdl2-ffi::+sdl-gl-context-profile-compatibility+))
         context)
-    (loop :for (major minor core) :in `((4 5 ,p) (4 4 ,p) (4 3 ,p)
-                                        (4 2 ,p) (4 1 ,p) (4 0 ,p)
-                                        (3 3 ,p))
+    (loop :for (major minor core) :in `((4 6 ,p) (4 5 ,p) (4 4 ,p) (4 3 ,p)
+                                        (4 2 ,p) (4 1 ,p) (4 0 ,p) (3 3 ,p))
        :until context
        :do (handler-case
                (progn
