@@ -103,6 +103,7 @@ Your machine must support at least GL 3.3")
 (defun make-shared-sdl-context (current-gl-context surface version double-buffer
                                 alpha-size depth-size stencil-size buffer-size
                                 red-size green-size blue-size)
+  (declare (ignorable current-gl-context))
   (setf cl-opengl-bindings::*gl-get-proc-address* #'sdl2::gl-get-proc-address)
   (sdl2:gl-set-attr :alpha-size alpha-size)
   (sdl2:gl-set-attr :depth-size depth-size)
