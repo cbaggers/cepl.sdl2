@@ -67,7 +67,6 @@
   (defun sdl-step-v1 (surface)
     (declare (ignore surface))
     (%case-events (event)
-      (:quit () (cepl.host:shutdown))
       (otherwise () (loop :for listener :in listeners :do (funcall listener event))))))
 
 ;;----------------------------------------------------------------------
